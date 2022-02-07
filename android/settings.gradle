@@ -1,3 +1,5 @@
 rootProject.name = 'WhizzardTracking'
+include ':mapmyindia-intouch-react-native-sdk'
+project(':mapmyindia-intouch-react-native-sdk').projectDir = new File(rootProject.projectDir, '../node_modules/mapmyindia-intouch-react-native-sdk/android')
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
