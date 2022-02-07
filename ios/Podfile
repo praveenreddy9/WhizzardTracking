@@ -12,6 +12,8 @@ target 'WhizzardTracking' do
     :hermes_enabled => false
   )
 
+  pod 'react-native-mapmyindia-intouch', :path => '../node_modules/mapmyindia-intouch-react-native-sdk'
+
   target 'WhizzardTrackingTests' do
     inherit! :complete
     # Pods for testing

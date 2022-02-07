@@ -36,6 +36,8 @@ allprojects {
                 excludeGroup "com.facebook.react"
             }
         }
+        maven { url 'https://maven.mapmyindia.com/repository/mapmyindia/'}
+
         google()
         maven { url 'https://www.jitpack.io' }
     }
