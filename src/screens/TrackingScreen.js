@@ -16,13 +16,15 @@ import Toast from 'react-native-simple-toast';
 import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import qs from 'qs';
-
 
 const clientId =
     '33OkryzDZsK0fYf2MDsn4dsRAMnP_Frs97Id2dZwPuO1lbqjYp5NrP4DFHweovpoCKAtH1NCpneuRsKIx3v77cZA1g1i95tA';
 const clientSecret =
     'lrFxI-iSEg-W7xCWVBmndqZ8-KUvG7Ft1ai_NokzHDe6DWmG9-1cTSOx4h1gRXZ5PEjIzbDfWPYziK49z4LWVZ0JvPTBppZNTVjWCuMQkHc=';
+
+const restKey = '171f30d6adb70b80b0b0feb9a7b74575'
+
+const accessToken = 'Bearer aca909be-e8ac-49fa-95de-26f94d176d71'
 
 class TrackingScreen extends Component {
   constructor(props) {
@@ -157,72 +159,17 @@ class TrackingScreen extends Component {
         .catch(function (error) {
           console.log('token error',error,error.response);
         });
-
-
-
-    // var axios = require('axios');
-    //
-    // const data = {
-    //   'grant_type': 'client_credentials',
-    //   'client_id': {clientId},
-    //   'client_secret': {clientSecret}
-    // };
-    //
-    // var config = {
-    //   method: 'POST',
-    //   url: 'http://outpost.mapmyindia.com/api/security/oauth/token',
-    //    headers: {
-    //     'accept': 'application/json',
-    //      'content-type': 'application/x-www-form-urlencoded',
-    //   },
-    //   data: qs.stringify(data),
-    // };
-    // axios(config)
-    //     .then(function (response) {
-    //       console.log('resp200',JSON.stringify(response.data));
-    //     })
-    //     .catch(function (error) {
-    //       console.log('error==>',error,error.response);
-    //     });
-
-
-    // const data = {
-    //   'grant_type': 'client_credentials',
-    //   'client_id': {clientId},
-    //   'client_secret': {clientSecret}
-    // };
-    // const url = 'http://outpost.mapmyindia.com/api/security/oauth/token';
-    // const options = {
-    //   method: 'POST',
-    //   headers: {
-    //     'accept':'application/json',
-    //     'content-type': 'application/x-www-form-urlencoded' },
-    //   data: qs.stringify(data),
-    //   url,
-    // };
-    // console.log('token body',options)
-    // axios(options)
-    //     .then(function (response) {
-    //   if (response) {
-    //     console.log('success response',response);
-    //   }
-    // }).catch(function (error) {
-    //   console.log('token generate error',error.response)
-    // })
   };
 
-  //     const serverUrl = "https://testing.whizzard.in"
-  //     const requiredUrl = '/api/noauth/checkMobileAppVersion'
 
   getDeviceLocations() {
     var axios = require('axios');
     var config = {
       method: 'get',
-      // url: 'https://intouch.mapmyindia.com/iot/api/geofences',
       url: 'https://intouch.mapmyindia.com/iot/api/devices',
       headers: {
         'accept': 'application/json',
-        'Authorization': 'Bearer 75c70da0-7271-4ed3-ba6d-8a090e2953b9'  /* put your token here without <>*/
+        'Authorization': accessToken
       }
     };
     axios(config)
@@ -239,10 +186,9 @@ class TrackingScreen extends Component {
     var config = {
       method: 'get',
       url: 'https://intouch.mapmyindia.com/iot/api/geofences',
-      // url: 'https://intouch.mapmyindia.com/iot/api/devices',
       headers: {
         'accept': 'application/json',
-        'Authorization': 'Bearer 75c70da0-7271-4ed3-ba6d-8a090e2953b9'  /* put your token here without <>*/
+        'Authorization': accessToken
       }
     };
     axios(config)
@@ -252,6 +198,83 @@ class TrackingScreen extends Component {
         .catch(function (error) {
           console.log('geofence error==>',error,error.response);
         });
+  };
+
+  getDriveDetails() {
+    var axios = require('axios');
+    var config = {
+      method: 'get',
+      url: 'https://intouch.mapmyindia.com/iot/api/devices/drives?deviceId=990309&startTime=1645014698&endTime=1645014699',
+      headers: {
+        'accept': 'application/json',
+        'Authorization': accessToken
+      }
+    };
+    axios(config)
+        .then(function (response) {
+          console.log('drive resp200',response.data);
+        })
+        .catch(function (error) {
+          console.log('drive error==>',error,error.response);
+        });
+  };
+
+  getEventDetails() {
+    var axios = require('axios');
+    var config = {
+      method: 'get',
+      url: 'https://intouch.mapmyindia.com/iot/api/devices/990309/events?startTime=1645014698&endTime=1645014698&skipPeriod=2',
+      headers: {
+        'accept': 'application/json',
+        'Authorization': accessToken
+      }
+    };
+    axios(config)
+        .then(function (response) {
+          console.log('events resp200',response.data);
+        })
+        .catch(function (error) {
+          console.log('events error==>',error,error.response);
+        });
+  };
+
+  getDistanceMatrix() {
+    var axios = require('axios');
+
+    var config = {
+      method: 'get',
+      url: 'https://apis.mapmyindia.com/advancedmaps/v1/'+restKey+'/distance_matrix/driving/mmi000%3B77.983936%2C28.255904?sources=0&destinations=1&region=IND',
+      headers: {
+        'accept': 'application/json',
+        'Authorization': accessToken
+      }
+    };
+console.log('matrix console',config);
+    axios(config)
+        .then(function (response) {
+          console.log('matrix resp200',response.data);
+        })
+        .catch(function (error) {
+          console.log('matrix error==>',error,error.response);
+        });
+
+    // var axios = require('axios');
+    // var config = {
+    //   method: 'get',
+    //   url: 'https://intouch.mapmyindia.com/iot/api/advancedmaps/v1/171f30d6adb70b80b0b0feb9a7b74575/distance_matrix/biking/77.983936,28.255904;77.05993,28.487555',
+    //   headers: {
+    //     'accept': 'application/json',
+    //     'Authorization': accessToken
+    //   }
+    // };
+    // console.log('matrix console',config)
+    // axios(config)
+    //     .then(function (response) {
+    //       console.log('matrix resp200',response.data);
+    //     })
+    //     .catch(function (error) {
+    //       console.log('matrix error==>',error,error.response);
+    //     });
   };
 
   render() {
@@ -335,7 +358,7 @@ class TrackingScreen extends Component {
         <TouchableOpacity onPress={this.getDeviceLocations}>
           <View style={styles.trackButton}>
             {/*<Image source={this.state.icon} style={{height: 30, width: 30}} />*/}
-            <Text style={{fontWeight: 'bold'}}>GET LOCATIONS</Text>
+            <Text style={{fontWeight: 'bold'}}>GET DEVICES</Text>
           </View>
         </TouchableOpacity>
 
@@ -343,6 +366,25 @@ class TrackingScreen extends Component {
           <View style={styles.trackButton}>
             {/*<Image source={this.state.icon} style={{height: 30, width: 30}} />*/}
             <Text style={{fontWeight: 'bold'}}>DEVICE GEOFENCE</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={this.getDriveDetails}>
+          <View style={styles.trackButton}>
+            <Text style={{fontWeight: 'bold'}}>DRIVE DETIALS</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={this.getEventDetails}>
+          <View style={styles.trackButton}>
+            <Text style={{fontWeight: 'bold'}}>EVENT DETIALS</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={this.getDistanceMatrix}>
+          <View style={styles.trackButton}>
+            {/*<Image source={this.state.icon} style={{height: 30, width: 30}} />*/}
+            <Text style={{fontWeight: 'bold'}}>DISTANCE MATRIX</Text>
           </View>
         </TouchableOpacity>
 
