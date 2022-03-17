@@ -16,6 +16,7 @@ import Toast from 'react-native-simple-toast';
 import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import Utils from '../screens/common/Utils';
 
 const clientId =
     '33OkryzDZsK0fYf2MDsn4dsRAMnP_Frs97Id2dZwPuO1lbqjYp5NrP4DFHweovpoCKAtH1NCpneuRsKIx3v77cZA1g1i95tA';
@@ -81,6 +82,36 @@ class TrackingScreen extends Component {
       // error reading value
     }
   };
+
+  storeToken = async value => {
+    try {
+      await AsyncStorage.setItem('@token_key', JSON.stringify(value));
+      // console.log('store ',value,typeof(value))
+    } catch (e) {
+      console.log('store error')
+    }
+  };
+
+  getToken = async () => {
+
+    // AsyncStorage.getItem('Whizzard:DEVICE_ID').then((DEVICE_ID) => {
+    //
+    // });
+
+
+    try {
+      const value = await AsyncStorage.getItem('@token_key');
+      // console.log('get token ',value,typeof(value))
+      if (value !== null) {
+        this.setState({
+          currentSpeed: parseInt(value),
+        });
+      }
+    } catch (e) {
+      // error reading value
+    }
+  };
+
   trackButtonPress = async () => {
     //console.log(status);
     if (this.state.isTrackingRunning) {
@@ -133,8 +164,7 @@ class TrackingScreen extends Component {
     }
   }
 
-  tokenGeneration = function () {
-
+  async tokenGeneration() {
     var axios = require('axios');
     var FormData = require('form-data');
     var data = new FormData();
@@ -154,7 +184,10 @@ class TrackingScreen extends Component {
 
     axios(config)
         .then(function (response) {
-          console.log('token resp200',response.data);
+          // console.log('token resp200',response.data);
+          let value = 'Bearer '+response.data.access_token
+          Utils.setToken('token', value, function () {
+          });
         })
         .catch(function (error) {
           console.log('token error',error,error.response);
@@ -163,118 +196,116 @@ class TrackingScreen extends Component {
 
 
   getDeviceLocations() {
-    var axios = require('axios');
-    var config = {
-      method: 'get',
-      url: 'https://intouch.mapmyindia.com/iot/api/devices',
-      headers: {
-        'accept': 'application/json',
-        'Authorization': accessToken
-      }
-    };
-    axios(config)
-        .then(function (response) {
-          console.log('devices resp200',response.data);
-        })
-        .catch(function (error) {
-          console.log('devices error==>',error,error.response);
-        });
+    AsyncStorage.getItem('WhizzardTracking:token').then((token) => {
+      var axios = require('axios');
+      var config = {
+        method: 'get',
+        url: 'https://intouch.mapmyindia.com/iot/api/devices',
+        headers: {
+          'accept': 'application/json',
+          'Authorization': token
+        }
+      };
+      axios(config)
+          .then(function (response) {
+            console.log('devices resp200',response.data);
+          })
+          .catch(function (error) {
+            // console.log('devices error==>',error,error.response);
+            Utils.dialogBox(error.response.data.error,'')
+          });
+    })
   };
 
   getDeviceGeofence() {
-    var axios = require('axios');
-    var config = {
-      method: 'get',
-      url: 'https://intouch.mapmyindia.com/iot/api/geofences',
-      headers: {
-        'accept': 'application/json',
-        'Authorization': accessToken
-      }
-    };
-    axios(config)
-        .then(function (response) {
-          console.log('geofence resp200',response.data);
-        })
-        .catch(function (error) {
-          console.log('geofence error==>',error,error.response);
-        });
+    AsyncStorage.getItem('WhizzardTracking:token').then((token) => {
+      var axios = require('axios');
+      var config = {
+        method: 'get',
+        url: 'https://intouch.mapmyindia.com/iot/api/geofences',
+        headers: {
+          'accept': 'application/json',
+          'Authorization': token
+        }
+      };
+      axios(config)
+          .then(function (response) {
+            console.log('geofence resp200',response.data);
+          })
+          .catch(function (error) {
+            // console.log('geofence error==>',error,error.response);
+            Utils.dialogBox(error.response.data.error,'')
+          });
+    })
   };
 
   getDriveDetails() {
-    var axios = require('axios');
-    var config = {
-      method: 'get',
-      url: 'https://intouch.mapmyindia.com/iot/api/devices/drives?deviceId=990309&startTime=1645014698&endTime=1645014699',
-      headers: {
-        'accept': 'application/json',
-        'Authorization': accessToken
-      }
-    };
-    axios(config)
-        .then(function (response) {
-          console.log('drive resp200',response.data);
-        })
-        .catch(function (error) {
-          console.log('drive error==>',error,error.response);
-        });
+    AsyncStorage.getItem('WhizzardTracking:token').then((token) => {
+      var axios = require('axios');
+      var config = {
+        method: 'get',
+        // url: 'https://intouch.mapmyindia.com/iot/api/devices/drives?deviceId=990309&startTime=1645014698&endTime=1645014699', //test
+        // url: 'https://intouch.mapmyindia.com/iot/api/devices/drives?deviceId=993957&startTime=1645097400000&endTime=1645102875900',  //pallavi
+        url: 'https://intouch.mapmyindia.com/iot/api/devices/drives?deviceId=993957&startTime=1645103248&endTime=1645103214',  //pallavi
+        headers: {
+          'accept': 'application/json',
+          'Authorization': token
+        }
+      };
+      axios(config)
+          .then(function (response) {
+            console.log('drive resp200',response.data);
+          })
+          .catch(function (error) {
+            console.log('drive error==>',error,error.response);
+            Utils.dialogBox(error.response.data.error,'')
+          });
+    })
   };
 
   getEventDetails() {
-    var axios = require('axios');
-    var config = {
-      method: 'get',
-      url: 'https://intouch.mapmyindia.com/iot/api/devices/990309/events?startTime=1645014698&endTime=1645014698&skipPeriod=2',
-      headers: {
-        'accept': 'application/json',
-        'Authorization': accessToken
-      }
-    };
-    axios(config)
-        .then(function (response) {
-          console.log('events resp200',response.data);
-        })
-        .catch(function (error) {
-          console.log('events error==>',error,error.response);
-        });
+    AsyncStorage.getItem('WhizzardTracking:token').then((token) => {
+      var axios = require('axios');
+      var config = {
+        method: 'get',
+        url: 'https://intouch.mapmyindia.com/iot/api/devices/990309/events?startTime=1645014698&endTime=1645014698&skipPeriod=2',
+        headers: {
+          'accept': 'application/json',
+          'Authorization': token
+        }
+      };
+      axios(config)
+          .then(function (response) {
+            console.log('events resp200',response.data);
+          })
+          .catch(function (error) {
+            // console.log('events error==>',error,error.response);
+            Utils.dialogBox(error.response.data.error,'')
+          });
+    })
   };
 
   getDistanceMatrix() {
-    var axios = require('axios');
-
-    var config = {
-      method: 'get',
-      url: 'https://apis.mapmyindia.com/advancedmaps/v1/'+restKey+'/distance_matrix/driving/mmi000%3B77.983936%2C28.255904?sources=0&destinations=1&region=IND',
-      headers: {
-        'accept': 'application/json',
-        'Authorization': accessToken
-      }
-    };
-console.log('matrix console',config);
-    axios(config)
-        .then(function (response) {
-          console.log('matrix resp200',response.data);
-        })
-        .catch(function (error) {
-          console.log('matrix error==>',error,error.response);
-        });
-
-    // var axios = require('axios');
-    // var config = {
-    //   method: 'get',
-    //   url: 'https://intouch.mapmyindia.com/iot/api/advancedmaps/v1/171f30d6adb70b80b0b0feb9a7b74575/distance_matrix/biking/77.983936,28.255904;77.05993,28.487555',
-    //   headers: {
-    //     'accept': 'application/json',
-    //     'Authorization': accessToken
-    //   }
-    // };
-    // console.log('matrix console',config)
-    // axios(config)
-    //     .then(function (response) {
-    //       console.log('matrix resp200',response.data);
-    //     })
-    //     .catch(function (error) {
-    //       console.log('matrix error==>',error,error.response);
-    //     });
+    AsyncStorage.getItem('WhizzardTracking:token').then((token) => {
+      var axios = require('axios');
+      var config = {
+        method: 'get',
+        url: 'https://apis.mapmyindia.com/advancedmaps/v1/'+restKey+'/distance_matrix/driving/mmi000%3B77.983936%2C28.255904?sources=0&destinations=1&region=IND',
+        headers: {
+          'accept': 'application/json',
+          'Authorization': token
+        }
+      };
+      console.log('matrix console',config);
+      axios(config)
+          .then(function (response) {
+            console.log('matrix resp200',response.data);
+          })
+          .catch(function (error) {
+            // console.log('matrix error==>',error,error.response);
+            Utils.dialogBox(error.response.data.error,'')
+          });
+    })
   };
 
   render() {
