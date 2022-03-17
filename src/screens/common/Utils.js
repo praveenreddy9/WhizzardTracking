@@ -1,8 +1,7 @@
 import React from 'react';
 import {Alert, ToastAndroid, Platform} from 'react-native';
-import Config from '../common/Config';
-import AsyncStorage from '@react-native-community/async-storage';
-import _ from "lodash";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+// import _ from "lodash";
 
 
 export var Utils = function () {
@@ -12,7 +11,7 @@ const passwordLength = 6;
 const AccountNumberLength = 10;
 
 Utils.prototype.getToken = function (key, callBack) {
-    AsyncStorage.getItem('Whizzard:' + key, (err, resp) => {
+    AsyncStorage.getItem('WhizzardTracking:' + key, (err, resp) => {
         if (err)
             callBack('Error fetching token', false);
         else
@@ -21,7 +20,7 @@ Utils.prototype.getToken = function (key, callBack) {
 };
 
 Utils.prototype.setToken = function (key, value, callBack) {
-    AsyncStorage.setItem('Whizzard:' + key, value, (err) => {
+    AsyncStorage.setItem('WhizzardTracking:' + key, value, (err) => {
         if (err)
             callBack('Error setting token', false);
         else
@@ -30,7 +29,7 @@ Utils.prototype.setToken = function (key, value, callBack) {
 };
 
 Utils.prototype.removeToken = function (key, value, callBack) {
-    AsyncStorage.removeItem('Whizzard:' + key, value, (err) => {
+    AsyncStorage.removeItem('WhizzardTracking:' + key, value, (err) => {
         if (err)
             callBack('Error setting token', false);
         else
